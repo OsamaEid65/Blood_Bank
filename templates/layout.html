@@ -1,0 +1,36 @@
+<div class="jumbotron">
+  <div class="container text-center">
+    <h1>DONATE BLOOD,SAVE LIFE</h1>
+  </div>
+</div>
+
+<nav class="navbar navbar-inverse">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>                        
+      </button>
+      <a class="navbar-brand" href="/"><img src="{{ url_for('static', filename='images/logo.jpg') }}" alt="" style="margin: -17px"></a>
+    </div>
+    <div class="collapse navbar-collapse" id="myNavbar">
+      <ul class="nav navbar-nav">
+        <li class="active"><a href="/">Home</a></li>
+        <li class="active"><a href='searchblood'>Search</a></li>
+        <li class="active"><a href='bloodrequest'>Blood Request</a></li>
+        <li class="active"><a href='camps'>Camps</a></li>
+        <li class="active"><a href='contactus'>Contact Us</a></li>
+        <li class="active"><a href='tips'>Tips</a></li>
+
+        {% if current_user.is_authenticated %}
+        <li class="active"><a href='dfg2'>Donor's Panel</a></li>
+        <li class="active"><a href='myprofile'>MyProfile</a></li>
+        {% else %}
+        <li class="active"><a href='newreg'>Donor Register</a></li>
+        <li class="active"><a href='login'>Donor Login</a></li>
+        {% endif %}
+      </ul>
+      </div>
+  </div>
+</nav>
