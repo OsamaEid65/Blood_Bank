@@ -1,19 +1,130 @@
-Blood Bank Project Status Report
-Challenges
-Technical Challenges:
-Discovery: During our implementation phase, we discovered that the integration of the third-party API for managing blood inventory is significantly more complex than initially anticipated. The API's documentation is lacking, which has caused delays in development. Adaptation: To address this, we allocated additional time for API integration and testing. We also reached out to the API's support team for assistance and adjusted our project timeline accordingly.
-Non-Technical Challenges:
-Discovery: Coordinating the schedules of all team members has proven to be challenging, leading to difficulties in aligning on meeting times and collaborative work sessions. Adaptation: To improve coordination, we implemented a shared team calendar and scheduled regular stand-up meetings to ensure consistent communication and progress tracking.
-Collaboration/Communication
-Team Collaboration:
-Challenges: Initially, we faced miscommunications about task assignments, resulting in duplicated efforts and some confusion about individual responsibilities. Successes: To address this, we introduced daily stand-ups and a clear task board on Trello. These changes have significantly improved our coordination and reduced misunderstandings. We also organized in-person work sessions, which have been highly effective in resolving issues quickly and fostering team cohesion.
-Individual Assistance:
-Although our project is team-based, we have also benefited from external help. We received valuable feedback from mentors on optimizing our database schema, which helped us avoid potential performance issues later on. Additionally, peers have provided insights into best practices for API integration, enhancing our technical approach.
-Project Updates
-Database Change:
-We decided to switch from MySQL to PostgreSQL for our database due to PostgreSQL's better support for some of the advanced features we need. This decision was based on technical assessments and recommendations from experienced developers.
-New Feature:
-Based on user feedback, we added a new feature that allows users to set up notifications for blood type shortages. This change aims to enhance the user experience and ensure timely responses to critical shortages.
-Progress
-Rating: 7/10
-Measurement: Progress is measured by the number of completed milestones, such as setting up the database, integrating the API, and developing the user interface. We track our tasks using Trello, ensuring that each completed task moves us closer to our project goals. Explanation: We have made significant progress on the core functionalities, including the database setup and API integration. However, we are slightly behind on the front-end development due to the unforeseen complexity of the API integration. Assessment: Despite the delays, we are confident that the project will be completed on time. We have adjusted our timeline and allocated additional resources to the areas where we are behind, ensuring that we stay on track to meet our Project Proposal and MVP definition.
+Blood Bank Project README
+Overview
+The Blood Bank project is a web application designed to facilitate blood donations and requests. It allows users to register, donate blood, request blood, and manage their profiles. The application uses Flask as the web framework, SQLAlchemy for database interactions, and Flask-Login for user session management.
+
+Features
+User Registration and Login: Secure user registration and login functionalities.
+Blood Donation: Users can donate blood and record the number of units donated.
+Blood Request: Users can request specific blood groups.
+Profile Management: Users can update their profile details and upload profile images.
+Blood Search: Users can search for available blood units based on blood groups.
+Technologies Used
+Flask: A micro web framework for Python.
+SQLAlchemy: SQL toolkit and Object-Relational Mapping (ORM) library for Python.
+Flask-Login: User session management for Flask.
+WTForms: Form rendering and validation library.
+SQLite: Database used for storing user and blood donation data.
+CSRF Protection: Ensures secure forms with Cross-Site Request Forgery protection.
+Installation
+Prerequisites
+Python 3.x
+pip (Python package installer)
+Steps
+Clone the repository:
+
+bash
+Copy code
+git clone <repository-url>
+cd blood-bank
+Create a virtual environment:
+
+bash
+Copy code
+python3 -m venv venv
+source venv/bin/activate  # On Windows use `venv\Scripts\activate`
+Install dependencies:
+
+bash
+Copy code
+pip install -r requirements.txt
+Set up the database:
+
+bash
+Copy code
+flask db init
+flask db migrate -m "Initial migration."
+flask db upgrade
+Run the application:
+
+bash
+Copy code
+flask run
+Access the application:
+Open your browser and go to http://127.0.0.1:5000.
+
+Application Structure
+app.py: Main application file initializing Flask and defining routes and models.
+config.py: Configuration file for Flask settings.
+forms.py: Defines WTForms forms used in the application.
+models.py: SQLAlchemy models for the application.
+templates/: HTML templates for rendering web pages.
+static/: Static files (CSS, JS, images).
+Routes
+/login: User login page.
+/newreg: User registration page.
+/blooddonated: Blood donation form.
+/view_donations: View donations made by the current user.
+/myprofile: View and update user profile.
+/uploadprofileimage: Upload profile image.
+/changepwd: Change password.
+/updatepf: Update profile details.
+/logout: User logout.
+/searchblood: Search for blood units.
+/bloodrequest: Submit a blood request.
+/home or /: Redirect to the home page.
+Security Considerations
+Sanitizing User Input: Ensure that all user inputs are sanitized to prevent SQL Injection and XSS attacks.
+CSRF Protection: Use CSRF tokens for all forms to protect against CSRF attacks.
+Password Hashing: Store passwords securely using a hashing algorithm (e.g., SHA-512).
+Example Code Snippets
+User Registration
+python
+Copy code
+@app.route("/newreg", methods=["POST", "GET"])
+def register():
+    form = RegisterForm()
+    if request.method == "POST" and form.validate_on_submit():
+        new_user = User(
+            email=form.email.data,
+            name=form.name.data,
+            password=sha512(form.password.data.encode()).hexdigest()
+        )
+        try:
+            db.session.add(new_user)
+            db.session.commit()
+            flash("User Registered, continue to login")
+            return redirect("/login")
+        except IntegrityError:
+            db.session.rollback()
+            flash("Email already registered")
+            return render_template("newreg.html", form=form)
+    return render_template("newreg.html", form=form)
+Blood Donation
+python
+Copy code
+@app.route("/blooddonated", methods=["POST", "GET"])
+@login_required
+def donate_blood():
+    form = BloodDonateForm()
+    if form.validate_on_submit():
+        new_donation = BloodDetail(
+            user_id=current_user.id,
+            blood_group=form.blood_group.data,
+            NoOfUnits=form.NoOfUnits.data,
+            timestamp=datetime.utcnow()
+        )
+        db.session.add(new_donation)
+        db.session.commit()
+        flash("Blood donation request successful, kindly visit the nearest center to save someone's life")
+        return redirect('/blooddonated')
+    return render_template('blooddonated.html', form=form)
+License
+This project is licensed under the MIT License.
+
+Contributing
+Fork the repository.
+Create a new branch (git checkout -b feature-branch).
+Make your changes.
+Commit your changes (git commit -m 'Add new feature').
+Push to the branch (git push origin feature-branch).
+Create a new Pull Request.
